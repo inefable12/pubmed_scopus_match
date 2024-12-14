@@ -28,6 +28,11 @@ def main():
             # Eliminar columnas duplicadas (si existen) 
             merged_df = merged_df.loc[:, ~merged_df.columns.duplicated()]
             
+            # Mover la columna 'DOI' a la primera posición
+            cols = list(merged_df.columns)
+            cols.insert(0, cols.pop(cols.index('DOI')))
+            merged_df = merged_df[cols]
+            
             # Guardar el archivo combinado como match.csv
             merged_df.to_csv('match.csv', index=False)
             
