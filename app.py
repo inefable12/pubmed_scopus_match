@@ -45,7 +45,7 @@ def main():
             #combined_df = combined_df[cols]
             
             # Guardar el archivo combinado como match.csv
-            combined_df.to_csv('match.csv', index=False)
+            ##combined_df.to_csv('match.csv', index=False)
             
             #st.success("El archivo match.csv ha sido creado con éxito.")
             
