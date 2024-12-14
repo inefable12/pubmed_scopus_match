@@ -33,25 +33,25 @@ def main():
             st.write("Vista previa del archivo 2:")
             st.dataframe(df2.head())
             
-            # Combinar los archivos usando la columna 'DOI'
-            merged_df = pd.merge(df1, df2, on='DOI', how='outer')
+            # Unir los archivos colocando primero el archivo 1 y luego el archivo 2
+            combined_df = pd.concat([df1, df2], ignore_index=True)
             
-            # Eliminar columnas duplicadas (si existen) 
-            merged_df = merged_df.loc[:, ~merged_df.columns.duplicated()]
+            # Eliminar filas duplicadas basándose en la columna 'DOI'
+            combined_df = combined_df.drop_duplicates(subset=['DOI'], keep='first')
             
             # Mover la columna 'DOI' a la primera posición
-            cols = list(merged_df.columns)
+            cols = list(combined_df.columns)
             cols.insert(0, cols.pop(cols.index('DOI')))
-            merged_df = merged_df[cols]
+            combined_df = combined_df[cols]
             
             # Guardar el archivo combinado como match.csv
-            merged_df.to_csv('match.csv', index=False)
+            combined_df.to_csv('match.csv', index=False)
             
             st.success("El archivo match.csv ha sido creado con éxito.")
             
-            # Detectar y eliminar filas duplicadas (basadas en todas las columnas, excepto DOI) 
-            duplicated_df = merged_df[merged_df.duplicated(subset=['DOI'], keep=False)]
-            unique_df = merged_df.drop_duplicates(subset=['DOI'], keep='first')
+            # Detectar y guardar las filas que estaban duplicadas antes de la eliminación
+            duplicated_df = pd.concat([df1, df2], ignore_index=True)
+            duplicated_df = duplicated_df[duplicated_df.duplicated(subset=['DOI'], keep=False)]
             
             # Guardar los duplicados en un archivo llamado duplicado.csv
             duplicated_df.to_csv('duplicado.csv', index=False)
@@ -59,7 +59,7 @@ def main():
             st.success("El archivo duplicado.csv ha sido creado con éxito.")
             
             st.write("Vista previa de los datos combinados (sin duplicados):")
-            st.dataframe(unique_df.head())
+            st.dataframe(combined_df.head())
             
         except Exception as e:
             st.error(f"Ocurrió un error al procesar los archivos: {e}")
