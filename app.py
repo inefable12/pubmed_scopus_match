@@ -16,6 +16,17 @@ def main():
             df1 = pd.read_csv(file_1)
             df2 = pd.read_csv(file_2)
             
+            # Mover la columna 'DOI' a la primera posición para ambos DataFrames
+            if 'DOI' in df1.columns:
+                cols1 = list(df1.columns)
+                cols1.insert(0, cols1.pop(cols1.index('DOI')))
+                df1 = df1[cols1]
+            
+            if 'DOI' in df2.columns:
+                cols2 = list(df2.columns)
+                cols2.insert(0, cols2.pop(cols2.index('DOI')))
+                df2 = df2[cols2]
+            
             st.write("Vista previa del archivo 1:")
             st.dataframe(df1.head())
             
