@@ -2,9 +2,9 @@ import streamlit as st
 import pandas as pd
 
 def main():
-    st.title('Combinar Archivos CSV usando DOI como referencia')
+    st.title('Match entre SCOPUS y PUBMED')
     
-    st.write("Sube los dos archivos CSV que deseas combinar.")
+    st.write("Autor: Jesus Alvarado-Huayhuaz")
     
     # Cargar archivos CSV
     file_1 = st.file_uploader("Sube el archivo 1 (CSV)", type=['csv'])
@@ -27,17 +27,20 @@ def main():
                 cols2.insert(0, cols2.pop(cols2.index('DOI')))
                 df2 = df2[cols2]
             
-            st.write("Vista previa del archivo 1:")
+            st.write(f"Vista previa del archivo 1 (filas: {len(df1)}):")
             st.dataframe(df1.head())
             
-            st.write("Vista previa del archivo 2:")
+            st.write(f"Vista previa del archivo 2 (filas: {len(df2)}):")
             st.dataframe(df2.head())
             
             # Unir los archivos colocando primero el archivo 1 y luego el archivo 2
             combined_df = pd.concat([df1, df2], ignore_index=True)
             
             # Eliminar filas duplicadas basándose en la columna 'DOI'
+            initial_combined_rows = len(combined_df)
             combined_df = combined_df.drop_duplicates(subset=['DOI'], keep='first')
+            final_combined_rows = len(combined_df)
+            duplicates_removed = initial_combined_rows - final_combined_rows
             
             # Mover la columna 'DOI' a la primera posición
             cols = list(combined_df.columns)
@@ -58,8 +61,10 @@ def main():
             
             st.success("El archivo duplicado.csv ha sido creado con éxito.")
             
-            st.write("Vista previa de los datos combinados (sin duplicados):")
+            st.write(f"Vista previa de los datos combinados (sin duplicados, filas: {len(combined_df)}):")
             st.dataframe(combined_df.head())
+            
+            st.write(f"Se eliminaron {duplicates_removed} filas duplicadas basadas en la columna DOI.")
             
             # Botón para descargar el archivo combinado
             csv_combined = combined_df.to_csv(index=False).encode('utf-8')
